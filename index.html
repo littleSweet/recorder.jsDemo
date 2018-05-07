@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <span id="time">0:00</span>
+    </div>
+    <a id="play" href="javascript:play()">Play</a>
+    <a id="stop" href="javascript:stop()">Stop</a>
+    <p id="validate_MainStart">开始认证</p>
+</body>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/recorder.js"></script>
+<script>
+    function timecode(ms) {
+            var hms = {
+                h: Math.floor(ms / (60 * 60 * 1000)),
+                m: Math.floor((ms / 60000) % 60),
+                s: Math.floor((ms / 1000) % 60)
+            };
+            var tc = []; // Timecode array to be joined with '.'
+
+            if (hms.h > 0) {
+                tc.push(hms.h);
+            }
+
+            tc.push((hms.m < 10 && hms.h > 0 ? "0" + hms.m : hms.m));
+            tc.push((hms.s < 10 ? "0" + hms.s : hms.s));
+
+            return tc.join(':');
+        }
+        // 初始化录音文件
+        Recorder.initialize({
+            swfSrc: "swf/recorder.swf"
+        });
+
+        //调用录音方法recorder
+        function record() {
+            Recorder.record({
+                start: function () {
+                    console.log("recording starts now. press stop when youre done. and then play or upload if you want.");
+                },
+                progress: function (milliseconds) {
+                    document.getElementById("time").innerHTML = timecode(milliseconds);
+                }
+            });
+        }
+
+        // 开始播放
+        function play() {
+            Recorder.stop();
+            Recorder.play({
+                progress: function (milliseconds) {
+                    document.getElementById("time").innerHTML = timecode(milliseconds);
+                }
+            });
+        }
+
+        // 停止播放和录音
+        function stop() {
+            Recorder.stop();
+        }
+
+        // 获取录音文件
+        function getData() {
+            return Recorder.audioData();
+        }
+
+        $('#validate_MainStart').click(function () {
+            record();
+        });
+
+</script>
+</html>
